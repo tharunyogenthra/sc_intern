@@ -168,6 +168,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			want:           []folder.Folder{},
 			wantErr:        errors.New("Error: Folder does not exist"),
 		},
+
 	}
 
 	for _, tt := range tests {
@@ -177,6 +178,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 
 			if err != nil && tt.wantErr != nil {
 				assert.Equal(t, tt.wantErr.Error(), err.Error(), "Error message is wrong")
+
 				return
 			}
 
