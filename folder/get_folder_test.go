@@ -160,6 +160,14 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			want:           []folder.Folder{},
 			wantErr:        errors.New("Error: Folder does not exist in the specified organization"),
 		},
+		{
+			name_of_test:   "Given folder os an empty string",
+			orgID:          orgID,
+			name_of_folder: "",
+			folders:        GetTestingSampleData(),
+			want:           []folder.Folder{},
+			wantErr:        errors.New("Error: Folder does not exist"),
+		},
 	}
 
 	for _, tt := range tests {
@@ -168,7 +176,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			got, err := f.GetAllChildFolders(tt.orgID, tt.name_of_folder)
 
 			if err != nil && tt.wantErr != nil {
-				assert.Equal(t, tt.wantErr.Error(), err.Error(), "Error message does not match")
+				assert.Equal(t, tt.wantErr.Error(), err.Error(), "Error message is wrong")
 				return
 			}
 
