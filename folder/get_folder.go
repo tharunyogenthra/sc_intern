@@ -92,3 +92,13 @@ func IsChildFolder(folder Folder, rootPath string) bool {
 	}
 	return false
 }
+
+func (f *driver) GetFolderOrgID(name string) uuid.UUID {
+	for _, folder := range f.folders {
+		if (folder.Name == name) {
+			return folder.OrgId
+		}
+	}
+	return uuid.UUID{}
+}
+

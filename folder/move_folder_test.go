@@ -51,7 +51,7 @@ func GetTestingSampleData2() []folder.Folder {
 
 func Test_folder_MoveFolder(t *testing.T) {
 	t.Parallel()
-	// orgID := uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7")
+	orgID := uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7")
 	tests := [...]struct {
 		name_of_test string
 		name         string
@@ -60,38 +60,38 @@ func Test_folder_MoveFolder(t *testing.T) {
 		want         []folder.Folder
 		wantErr      error
 	}{
-		// {
-		// 	name_of_test: "We move the folder to where it was originally",
-		// 	name:         "bravo",
-		// 	dst:          "delta",
-		// 	folders:      GetTestingSampleData2(),
-		// 	want: []folder.Folder{
-		// 		{Name: "alpha", Paths: "alpha", OrgId: orgID},
-		// 		{Name: "bravo", Paths: "alpha.delta.bravo", OrgId: orgID},
-		// 		{Name: "charlie", Paths: "alpha.delta.bravo.charlie", OrgId: orgID},
-		// 		{Name: "delta", Paths: "alpha.delta", OrgId: orgID},
-		// 		{Name: "echo", Paths: "alpha.delta.echo", OrgId: orgID},
-		// 		{Name: "foxtrot", Paths: "foxtrot", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a")},
-		// 		{Name: "golf", Paths: "golf", OrgId: orgID},
-		// 	},
-		// 	wantErr: nil,
-		// },
-		// {
-		// 	name_of_test: "We move a subfolder to a diff folder in the same org",
-		// 	name:         "bravo",
-		// 	dst:          "golf",
-		// 	folders:      GetTestingSampleData2(),
-		// 	want: []folder.Folder{
-		// 		{Name: "alpha", Paths: "alpha", OrgId: orgID},
-		// 		{Name: "bravo", Paths: "golf.bravo", OrgId: orgID},
-		// 		{Name: "charlie", Paths: "golf.bravo.charlie", OrgId: orgID},
-		// 		{Name: "delta", Paths: "alpha.delta", OrgId: orgID},
-		// 		{Name: "echo", Paths: "alpha.delta.echo", OrgId: orgID},
-		// 		{Name: "foxtrot", Paths: "foxtrot", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a")},
-		// 		{Name: "golf", Paths: "golf", OrgId: orgID},
-		// 	},
-		// 	wantErr: nil,
-		// },
+		{
+			name_of_test: "We move the folder to child of same level",
+			name:         "bravo",
+			dst:          "delta",
+			folders:      GetTestingSampleData2(),
+			want: []folder.Folder{
+				{Name: "alpha", Paths: "alpha", OrgId: orgID},
+				{Name: "bravo", Paths: "alpha.delta.bravo", OrgId: orgID},
+				{Name: "charlie", Paths: "alpha.delta.bravo.charlie", OrgId: orgID},
+				{Name: "delta", Paths: "alpha.delta", OrgId: orgID},
+				{Name: "echo", Paths: "alpha.delta.echo", OrgId: orgID},
+				{Name: "foxtrot", Paths: "foxtrot", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a")},
+				{Name: "golf", Paths: "golf", OrgId: orgID},
+			},
+			wantErr: nil,
+		},
+		{
+			name_of_test: "We move a subfolder to a diff folder in the same org",
+			name:         "bravo",
+			dst:          "golf",
+			folders:      GetTestingSampleData2(),
+			want: []folder.Folder{
+				{Name: "alpha", Paths: "alpha", OrgId: orgID},
+				{Name: "bravo", Paths: "golf.bravo", OrgId: orgID},
+				{Name: "charlie", Paths: "golf.bravo.charlie", OrgId: orgID},
+				{Name: "delta", Paths: "alpha.delta", OrgId: orgID},
+				{Name: "echo", Paths: "alpha.delta.echo", OrgId: orgID},
+				{Name: "foxtrot", Paths: "foxtrot", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a")},
+				{Name: "golf", Paths: "golf", OrgId: orgID},
+			},
+			wantErr: nil,
+		},
 		{
 			name_of_test: "Name string is empty",
 			name:         "",
