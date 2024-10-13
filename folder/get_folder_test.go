@@ -10,7 +10,7 @@ import (
 
 // This data is provided in the spec for component 1
 // i changed the orgId field to make it actually compile
-func GetTestingSampleData() []folder.Folder {
+func GetTestingSampleData1() []folder.Folder {
 	return []folder.Folder{
 		{
 			Name:  "alpha",
@@ -59,7 +59,7 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 		{
 			name:    "One org which returns multiple folders",
 			orgID:   orgID,
-			folders: GetTestingSampleData(),
+			folders: GetTestingSampleData1(),
 			want: []folder.Folder{
 				{Name: "alpha", OrgId: orgID, Paths: "alpha"},
 				{Name: "bravo", OrgId: orgID, Paths: "alpha.bravo"},
@@ -71,7 +71,7 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 		{
 			name:    "One org which returns one folder",
 			orgID:   uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"),
-			folders: GetTestingSampleData(),
+			folders: GetTestingSampleData1(),
 			want: []folder.Folder{
 				{Name: "foxtrot", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "foxtrot"},
 			},
@@ -79,13 +79,13 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 		{
 			name:    "Wrong org returns no folders",
 			orgID:   uuid.FromStringOrNil("c1wrong7-b7c0-45a3-a6ae-9546248fb17a"),
-			folders: GetTestingSampleData(),
+			folders: GetTestingSampleData1(),
 			want:    []folder.Folder{},
 		},
 		{
 			name:    "Empty org string returns nothing",
 			orgID:   uuid.FromStringOrNil(""),
-			folders: GetTestingSampleData(),
+			folders: GetTestingSampleData1(),
 			want:    []folder.Folder{},
 		},
 	}
@@ -114,7 +114,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			name_of_test:   "Gets all child folders from org and name",
 			orgID:          orgID,
 			name_of_folder: "alpha",
-			folders:        GetTestingSampleData(),
+			folders:        GetTestingSampleData1(),
 			want: []folder.Folder{
 				{Name: "bravo", OrgId: orgID, Paths: "alpha.bravo"},
 				{Name: "charlie", OrgId: orgID, Paths: "alpha.bravo.charlie"},
@@ -126,7 +126,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			name_of_test:   "Gets all child folders of a child folder",
 			orgID:          orgID,
 			name_of_folder: "bravo",
-			folders:        GetTestingSampleData(),
+			folders:        GetTestingSampleData1(),
 			want: []folder.Folder{
 				{
 					Name:  "charlie",
@@ -140,7 +140,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			name_of_test:   "Given folder has no child folders",
 			orgID:          orgID,
 			name_of_folder: "charlie",
-			folders:        GetTestingSampleData(),
+			folders:        GetTestingSampleData1(),
 			want:           []folder.Folder{},
 			wantErr:        nil,
 		},
@@ -148,7 +148,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			name_of_test:   "Given folder doesn't exist",
 			orgID:          orgID,
 			name_of_folder: "invalid_folder",
-			folders:        GetTestingSampleData(),
+			folders:        GetTestingSampleData1(),
 			want:           []folder.Folder{},
 			wantErr:        errors.New("Error: Folder does not exist"),
 		},
@@ -156,7 +156,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			name_of_test:   "Given folder does not exist in org",
 			orgID:          orgID,
 			name_of_folder: "echo",
-			folders:        GetTestingSampleData(),
+			folders:        GetTestingSampleData1(),
 			want:           []folder.Folder{},
 			wantErr:        errors.New("Error: Folder does not exist in the specified organization"),
 		},
@@ -164,7 +164,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			name_of_test:   "Given folder os an empty string",
 			orgID:          orgID,
 			name_of_folder: "",
-			folders:        GetTestingSampleData(),
+			folders:        GetTestingSampleData1(),
 			want:           []folder.Folder{},
 			wantErr:        errors.New("Error: Folder does not exist"),
 		},
