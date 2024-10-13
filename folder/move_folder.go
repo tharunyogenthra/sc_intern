@@ -2,7 +2,6 @@ package folder
 
 import (
 	"errors"
-	// "fmt"
 	"strings"
 )
 
@@ -48,20 +47,27 @@ func (f *driver) MoveFolder(name string, dst string) ([]Folder, error) {
 	// This is really trivial as we are stated in the spec to not persist state
 	folders := f.folders
 	dstPath := ""
+	namePath := ""
+
 	for _, folder := range folders {
 		if (folder.Name == dst) {
 			dstPath = folder.Paths
+		} else if (folder.Name == name) {
+			namePath = folder.Paths
 		}
 	}
 
 	// rewrite prefix
 	prefix := dstPath + "." + name
 
-
 	for i := range folders {
 		if (folders[i].Name == name) {
 			folders[i].Paths = dstPath + "." + name
 		} else if (isInChildren(folders[i].Name, nameChildFolders)) {
+			// root is tricky so i added this to simplify it
+			if (!strings.Contains(namePath, ".")) {
+				folders[i].Paths = dstPath + "." + folders[i].Paths
+			}
 			folders[i].Paths = concatPaths(folders[i].Paths, prefix)
 		} 
 	}
