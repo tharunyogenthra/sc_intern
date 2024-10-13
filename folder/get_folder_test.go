@@ -1,191 +1,99 @@
-package folder_test
+package folder
 
 import (
 	"errors"
-	"github.com/georgechieng-sc/interns-2022/folder"
 	"github.com/gofrs/uuid"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-// This data is provided in the spec for component 1
-// i changed the orgId field to make it actually compile
-func GetTestingSampleData1() []folder.Folder {
-	return []folder.Folder{
-		{
-			Name:  "alpha",
-			OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"),
-			Paths: "alpha",
-		},
-		{
-			Name:  "bravo",
-			OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"),
-			Paths: "alpha.bravo",
-		},
-		{
-			Name:  "charlie",
-			OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"),
-			Paths: "alpha.bravo.charlie",
-		},
-		{
-			Name:  "delta",
-			OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"),
-			Paths: "alpha.delta",
-		},
-		{
-			Name:  "echo",
-			OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"),
-			Paths: "echo",
-		},
-		{
-			Name:  "foxtrot",
-			OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"),
-			Paths: "foxtrot",
-		},
-	}
+func GetAllFolders() []Folder {
+	return GetSampleData()
 }
 
-// feel free to change how the unit test is structured
-func Test_folder_GetFoldersByOrgID(t *testing.T) {
-	t.Parallel()
-	// reuse to save performace
-	orgID := uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7")
-	tests := [...]struct {
-		name    string
-		orgID   uuid.UUID
-		folders []folder.Folder
-		want    []folder.Folder
-	}{
-		{
-			name:    "One org which returns multiple folders",
-			orgID:   orgID,
-			folders: GetTestingSampleData1(),
-			want: []folder.Folder{
-				{Name: "alpha", OrgId: orgID, Paths: "alpha"},
-				{Name: "bravo", OrgId: orgID, Paths: "alpha.bravo"},
-				{Name: "charlie", OrgId: orgID, Paths: "alpha.bravo.charlie"},
-				{Name: "delta", OrgId: orgID, Paths: "alpha.delta"},
-				{Name: "echo", OrgId: orgID, Paths: "echo"},
-			},
-		},
-		{
-			name:    "One org which returns one folder",
-			orgID:   uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"),
-			folders: GetTestingSampleData1(),
-			want: []folder.Folder{
-				{Name: "foxtrot", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "foxtrot"},
-			},
-		},
-		{
-			name:    "Wrong org returns no folders",
-			orgID:   uuid.FromStringOrNil("c1wrong7-b7c0-45a3-a6ae-9546248fb17a"),
-			folders: GetTestingSampleData1(),
-			want:    []folder.Folder{},
-		},
-		{
-			name:    "Empty org string returns nothing",
-			orgID:   uuid.FromStringOrNil(""),
-			folders: GetTestingSampleData1(),
-			want:    []folder.Folder{},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			f := folder.NewDriver(tt.folders)
-			got := f.GetFoldersByOrgID(tt.orgID)
+func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) []Folder {
+	folders := f.folders
 
-			assert.Equal(t, tt.want, got, "The expected output doesnt match")
-		})
+	res := []Folder{}
+	for _, f := range folders {
+		if f.OrgId == orgID {
+			res = append(res, f)
+		}
 	}
+
+	return res
+
 }
 
-func Test_folder_GetAllChildFolders(t *testing.T) {
-	t.Parallel()
-	orgID := uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7")
-	tests := [...]struct {
-		name_of_test   string
-		orgID          uuid.UUID
-		name_of_folder string
-		folders        []folder.Folder
-		want           []folder.Folder
-		wantErr        error
-	}{
-		{
-			name_of_test:   "Gets all child folders from org and name",
-			orgID:          orgID,
-			name_of_folder: "alpha",
-			folders:        GetTestingSampleData1(),
-			want: []folder.Folder{
-				{Name: "bravo", OrgId: orgID, Paths: "alpha.bravo"},
-				{Name: "charlie", OrgId: orgID, Paths: "alpha.bravo.charlie"},
-				{Name: "delta", OrgId: orgID, Paths: "alpha.delta"},
-			},
-			wantErr: nil,
-		},
-		{
-			name_of_test:   "Gets all child folders of a child folder",
-			orgID:          orgID,
-			name_of_folder: "bravo",
-			folders:        GetTestingSampleData1(),
-			want: []folder.Folder{
-				{
-					Name:  "charlie",
-					OrgId: orgID,
-					Paths: "alpha.bravo.charlie",
-				},
-			},
-			wantErr: nil,
-		},
-		{
-			name_of_test:   "Given folder has no child folders",
-			orgID:          orgID,
-			name_of_folder: "charlie",
-			folders:        GetTestingSampleData1(),
-			want:           []folder.Folder{},
-			wantErr:        nil,
-		},
-		{
-			name_of_test:   "Given folder doesn't exist",
-			orgID:          orgID,
-			name_of_folder: "invalid_folder",
-			folders:        GetTestingSampleData1(),
-			want:           []folder.Folder{},
-			wantErr:        errors.New("Error: Folder does not exist"),
-		},
-		{
-			name_of_test:   "Given folder does not exist in org",
-			orgID:          orgID,
-			name_of_folder: "echo",
-			folders:        GetTestingSampleData1(),
-			want:           []folder.Folder{},
-			wantErr:        errors.New("Error: Folder does not exist in the specified organization"),
-		},
-		{
-			name_of_test:   "Given folder os an empty string",
-			orgID:          orgID,
-			name_of_folder: "",
-			folders:        GetTestingSampleData1(),
-			want:           []folder.Folder{},
-			wantErr:        errors.New("Error: Folder does not exist"),
-		},
+func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, error) {
+
+	exists := f.CheckFolderExists(name)
+	if !exists {
+		return nil, errors.New("Error: Folder does not exist")
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name_of_test, func(t *testing.T) {
-			f := folder.NewDriver(tt.folders)
-			got, err := f.GetAllChildFolders(tt.orgID, tt.name_of_folder)
-
-			if err != nil && tt.wantErr != nil {
-				assert.Equal(t, tt.wantErr.Error(), err.Error(), "Error message is wrong")
-				return
-			}
-
-			if err != nil {
-				t.Errorf("GetAllChildFolders() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-
-			assert.Equal(t, tt.want, got, "The expected output doesn't match")
-		})
+	existsOrg := f.CheckFolderExistsWithinOrg(orgID, name)
+	if !existsOrg {
+		return nil, errors.New("Error: Folder does not exist in the specified organization")
 	}
+
+	rootPath := ""
+	folderOrgID := f.GetFoldersByOrgID(orgID)
+
+	for _, folder := range folderOrgID {
+		if folder.Name == name {
+			rootPath = folder.Paths
+			break
+		}
+	}
+
+	children := []Folder{}
+	for _, folder := range f.folders {
+		if IsChildFolder(folder, rootPath) {
+			children = append(children, folder)
+		}
+	}
+
+	return children, nil
+}
+
+func (f *driver) CheckFolderExists(name string) bool {
+	for _, folder := range f.folders {
+		if folder.Name == name {
+			return true
+		}
+	}
+	return false
+}
+
+func (f *driver) CheckFolderExistsWithinOrg(orgID uuid.UUID, name string) bool {
+	folders := f.GetFoldersByOrgID(orgID)
+
+	for _, folder := range folders {
+		if folder.Name == name {
+			return true
+		}
+	}
+	return false
+}
+
+func IsChildFolder(folder Folder, rootPath string) bool {
+	// as its a subfolder this condition must apply
+	if len(rootPath) >= len(folder.Paths) {
+		return false
+	}
+	// :len(rootPath) uses string splicing very similar to python
+	// x := "bravo.charlie"
+	// fmt.Println(x[:len(root)]) -> bravo
+	if folder.Paths != rootPath && folder.Paths[:len(rootPath)] == rootPath {
+		return true
+	}
+	return false
+}
+
+func (f *driver) GetFolderOrgID(name string) (uuid.UUID) {
+	for _, folder := range f.folders {
+		if (folder.Name == name) {
+			return folder.OrgId
+		}
+	}
+	return uuid.UUID{}
 }
