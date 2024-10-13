@@ -59,6 +59,7 @@ func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, err
 	return children, nil
 }
 
+// Checks if folder exists
 func (f *driver) CheckFolderExists(name string) bool {
 	for _, folder := range f.folders {
 		if folder.Name == name {
@@ -68,6 +69,7 @@ func (f *driver) CheckFolderExists(name string) bool {
 	return false
 }
 
+// Checks whether folder exists within org
 func (f *driver) CheckFolderExistsWithinOrg(orgID uuid.UUID, name string) bool {
 	folders := f.GetFoldersByOrgID(orgID)
 
@@ -79,6 +81,7 @@ func (f *driver) CheckFolderExistsWithinOrg(orgID uuid.UUID, name string) bool {
 	return false
 }
 
+// Checks if a folder is a subfolder using string splicing
 func IsChildFolder(folder Folder, rootPath string) bool {
 	// as its a subfolder this condition must apply
 	if len(rootPath) >= len(folder.Paths) {
@@ -93,6 +96,7 @@ func IsChildFolder(folder Folder, rootPath string) bool {
 	return false
 }
 
+// Returns the orgId associated with a folder
 func (f *driver) GetFolderOrgID(name string) uuid.UUID {
 	for _, folder := range f.folders {
 		if (folder.Name == name) {
